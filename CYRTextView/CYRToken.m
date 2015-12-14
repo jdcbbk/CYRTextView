@@ -36,15 +36,18 @@
 
 @implementation CYRToken
 
-+ (instancetype)tokenWithName:(NSString *)name expression:(NSString *)expression attributes:(NSDictionary *)attributes
++ (instancetype)tokenWithName:(NSString *)name expression:(NSRegularExpression *)expression attributes:(NSDictionary *)attributes
 {
+    return [CYRToken tokenWithName:name expression:expression attributes:attributes index:0];
+}
++ (instancetype)tokenWithName:(NSString *)name expression:(NSRegularExpression *)expression attributes:(NSDictionary *)attributes index:(NSUInteger)index{
     CYRToken *textAttribute = [CYRToken new];
     
     textAttribute.name = name;
     textAttribute.expression = expression;
     textAttribute.attributes = attributes;
+    textAttribute.index=index;
     
     return textAttribute;
 }
-
 @end

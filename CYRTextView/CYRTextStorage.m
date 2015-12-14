@@ -50,8 +50,8 @@
 {
     if (self = [super init])
     {
-        _defaultFont = [UIFont systemFontOfSize:12.0f];
-        _defaultTextColor = [UIColor blackColor];
+        _defaultFont = [UIFont systemFontOfSize:17.5f];
+        _defaultTextColor = [UIColor colorWithRed:0.11 green:0.11 blue:0.11 alpha:1];
         _attributedString = [NSMutableAttributedString new];
         
         _tokens = @[];
@@ -113,6 +113,7 @@
 
 - (void)performReplacementsForRange:(NSRange)changedRange
 {
+    return [self update];
     NSRange extendedRange = NSUnionRange(changedRange, [[_attributedString string] lineRangeForRange:NSMakeRange(NSMaxRange(changedRange), 0)]);
     
     [self applyStylesToRange:extendedRange];
@@ -123,10 +124,14 @@
 {
     NSRange range = NSMakeRange(0, self.length);
 
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineSpacing = 6;// 字体的行间距
+    
     NSDictionary *attributes =
     @{
       NSFontAttributeName : self.defaultFont,
-      NSForegroundColorAttributeName : self.defaultTextColor
+      NSForegroundColorAttributeName : self.defaultTextColor,
+      NSParagraphStyleAttributeName:paragraphStyle
      };
     [self addAttributes:attributes range:range];
 
@@ -142,51 +147,68 @@
     
     NSRange paragaphRange = [self.string paragraphRangeForRange: self.editedRange];
 
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineSpacing = 6;// 字体的行间距
     // Reset the text attributes
     NSDictionary *attributes =
     @{
       NSFontAttributeName : self.defaultFont,
-      NSForegroundColorAttributeName : self.defaultTextColor
+      NSForegroundColorAttributeName : self.defaultTextColor,
+      NSParagraphStyleAttributeName:paragraphStyle
      };
     [self setAttributes:attributes range:paragaphRange];
     
-    for (CYRToken *attribute in self.tokens)
+    for (CYRToken *token in self.tokens)
     {
-        NSRegularExpression *regex = [self expressionForDefinition:attribute.name];
+        NSRegularExpression *regex = token.expression;//[self expressionForDefinition:attribute.name];
         
         [regex enumerateMatchesInString:self.string options:0 range:paragaphRange
                              usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+                                 NSLog(@"%@=>%@",regex,[self.string substringWithRange:result.range]);
+                                 for (int i=0; i<result.numberOfRanges; i++) {
+                                     NSRange range=[result rangeAtIndex:i];
+                                     if (range.length>0) {
+                                         NSLog(@"%@[%d]=>%@",regex,i,[self.string substringWithRange: range]);
+                                     }
+                                     
+                                 }
+                                 if (result.numberOfRanges>token.index) {
+                                     NSRange range=[result rangeAtIndex:token.index];
+                                     if (range.length>0) {
+                                         [token.attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id attributeValue, BOOL *stop) {
+                                             [self addAttribute:attributeName value:attributeValue range:range];
+                                         }];
+                                     }
+                                 }
                                  
-                                 [attribute.attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id attributeValue, BOOL *stop) {
-                                     [self addAttribute:attributeName value:attributeValue range:result.range];
-                                 }];
+                                 
                              }];
     }
 }
 
-- (NSRegularExpression *)expressionForDefinition:(NSString *)definition
-{
-    __block CYRToken *attribute = nil;
-    
-    [self.tokens enumerateObjectsUsingBlock:^(CYRToken *enumeratedAttribute, NSUInteger idx, BOOL *stop) {
-        if ([enumeratedAttribute.name isEqualToString:definition])
-        {
-            attribute = enumeratedAttribute;
-            *stop = YES;
-        }
-    }];
-    
-    NSRegularExpression *expression = self.regularExpressionCache[attribute.expression];
-    
-    if (!expression)
-    {
-        expression = [NSRegularExpression regularExpressionWithPattern:attribute.expression
-                                                               options:NSRegularExpressionCaseInsensitive error:nil];
-        
-        [self.regularExpressionCache setObject:expression forKey:definition];
-    }
-    
-    return expression;
-}
+//- (NSRegularExpression *)expressionForDefinition:(NSString *)definition
+//{
+//    __block CYRToken *attribute = nil;
+//    
+//    [self.tokens enumerateObjectsUsingBlock:^(CYRToken *enumeratedAttribute, NSUInteger idx, BOOL *stop) {
+//        if ([enumeratedAttribute.name isEqualToString:definition])
+//        {
+//            attribute = enumeratedAttribute;
+//            *stop = YES;
+//        }
+//    }];
+//    
+//    NSRegularExpression *expression = self.regularExpressionCache[attribute.expression];
+//    
+//    if (!expression)
+//    {
+//        expression = [NSRegularExpression regularExpressionWithPattern:attribute.expression
+//                                                               options:NSRegularExpressionCaseInsensitive error:nil];
+//        
+//        [self.regularExpressionCache setObject:expression forKey:definition];
+//    }
+//    
+//    return expression;
+//}
 
 @end

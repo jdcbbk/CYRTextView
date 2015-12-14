@@ -62,7 +62,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
     CYRTextStorage *textStorage = [CYRTextStorage new];
     CYRLayoutManager *layoutManager = [CYRLayoutManager new];
     
-    self.lineNumberLayoutManager = layoutManager;
+    self.lineNumberLayoutManager = nil;//layoutManager;
     
     NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     
@@ -205,19 +205,19 @@ static const float kCursorVelocity = 1.0f/8.0f;
 // Original implementation sourced from: https://github.com/alldritt/TextKit_LineNumbers
 - (void)drawRect:(CGRect)rect
 {
-    //  Drag the line number gutter background.  The line numbers them selves are drawn by LineNumberLayoutManager.
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGRect bounds = self.bounds;
-    
-    CGFloat height = MAX(CGRectGetHeight(bounds), self.contentSize.height) + 200;
-    
-    // Set the regular fill
-    CGContextSetFillColorWithColor(context, self.gutterBackgroundColor.CGColor);
-    CGContextFillRect(context, CGRectMake(bounds.origin.x, bounds.origin.y, self.lineNumberLayoutManager.gutterWidth, height));
-    
-    // Draw line
-    CGContextSetFillColorWithColor(context, self.gutterLineColor.CGColor);
-    CGContextFillRect(context, CGRectMake(self.lineNumberLayoutManager.gutterWidth, bounds.origin.y, 0.5, height));
+//    //  Drag the line number gutter background.  The line numbers them selves are drawn by LineNumberLayoutManager.
+//    CGContextRef context = UIGraphicsGetCurrentContext();
+//    CGRect bounds = self.bounds;
+//    
+//    CGFloat height = MAX(CGRectGetHeight(bounds), self.contentSize.height) + 200;
+//    
+//    // Set the regular fill
+//    CGContextSetFillColorWithColor(context, self.gutterBackgroundColor.CGColor);
+//    CGContextFillRect(context, CGRectMake(bounds.origin.x, bounds.origin.y, self.lineNumberLayoutManager.gutterWidth, height));
+//    
+//    // Draw line
+//    CGContextSetFillColorWithColor(context, self.gutterLineColor.CGColor);
+//    CGContextFillRect(context, CGRectMake(self.lineNumberLayoutManager.gutterWidth, bounds.origin.y, 0.5, height));
     
     if (_lineCursorEnabled)
     {
