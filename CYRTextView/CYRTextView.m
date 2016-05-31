@@ -94,7 +94,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(selectedTextRange)) options:NSKeyValueObservingOptionNew context:CYRTextViewContext];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(selectedRange)) options:NSKeyValueObservingOptionNew context:CYRTextViewContext];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTextViewDidChangeNotification:) name:UITextViewTextDidChangeNotification object:self];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTextViewDidChangeNotification:) name:UITextViewTextDidChangeNotification object:self];
     
     // Setup defaults
     self.font = [UIFont systemFontOfSize:16.0f];
@@ -157,26 +157,26 @@ static const float kCursorVelocity = 1.0f/8.0f;
 
 #pragma mark - Notifications
 
-- (void)handleTextViewDidChangeNotification:(NSNotification *)notification
-{
-    if (notification.object == self)
-    {
-        CGRect line = [self caretRectForPosition: self.selectedTextRange.start];
-        CGFloat overflow = line.origin.y + line.size.height - ( self.contentOffset.y + self.bounds.size.height - self.contentInset.bottom - self.contentInset.top );
-        
-        if ( overflow > 0 )
-        {
-            // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
-            // Scroll caret to visible area
-            CGPoint offset = self.contentOffset;
-            offset.y += overflow + 7; // leave 7 pixels margin
-            // Cannot animate with setContentOffset:animated: or caret will not appear
-//            [UIView animateWithDuration:.2 animations:^{
-//                [self setContentOffset:offset];
-//            }];
-        }
-    }
-}
+//- (void)handleTextViewDidChangeNotification:(NSNotification *)notification
+//{
+//    if (notification.object == self)
+//    {
+//        CGRect line = [self caretRectForPosition: self.selectedTextRange.start];
+//        CGFloat overflow = line.origin.y + line.size.height - ( self.contentOffset.y + self.bounds.size.height - self.contentInset.bottom - self.contentInset.top );
+//        
+//        if ( overflow > 0 )
+//        {
+//            // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
+//            // Scroll caret to visible area
+//            CGPoint offset = self.contentOffset;
+//            offset.y += overflow + 7; // leave 7 pixels margin
+//            // Cannot animate with setContentOffset:animated: or caret will not appear
+////            [UIView animateWithDuration:.2 animations:^{
+////                [self setContentOffset:offset];
+////            }];
+//        }
+//    }
+//}
 
 
 #pragma mark - Overrides
